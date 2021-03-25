@@ -20,11 +20,12 @@ class TestingConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    FLASK_ENV = development
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@0.0.0.0:3306/meta"
+    FLASK_ENV = "development"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@192.168.3.16:3306/pypan"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-     UPLOAD_FOLDER = 'data/'
-    THUMBNAIL_FOLDER = 'data/thumbnail'
+    UPLOAD_FOLDER = '/home/helonghuan/git_projects/PyPan/data/'
+    THUMBNAIL_FOLDER = '/home/helonghuan/git_projects/PyPan/data/thumbnail'
+    SECRET_KEY = 'hard to guess string.'
     
 
 config = {
