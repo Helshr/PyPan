@@ -1,0 +1,11 @@
+.footer {
+    background-color: #333333;
+    height: 100px;
+}
+
+.footerLogo {
+    margin-top: -20px;
+    height: 100px;
+    background: url(../../assets/wizard-footer.png) no-repeat center 0;
+    background-size: 100px 100px;
+}
