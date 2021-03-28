@@ -79,6 +79,20 @@ class FileMeta(db.Model):
         db.session.delete(fm)
         db.session.commit()
 
+    @staticmethod
+    def get_all_infos():
+        file_metas = FileMeta.query.all()
+        file_meta_out = []
+        for file_meta in file_metas:
+            file_meta_out.append(file_meta.to_json())
+        return file_meta_out
+
+    def to_json(self):
+        return {
+            "name": self.file_name,
+            "md5": self.file_md5,
+        }
+
 
 if __name__ == "__main__":
     # fm = FileMeta("/home/helonghuan", "1.jpeg")

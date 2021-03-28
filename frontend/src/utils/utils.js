@@ -134,3 +134,8 @@ export const hash = (str) => {
     while (value >> 6)
     return retValue
 }
+
+
+export const deepCopy = (o) => {
+  return JSON.parse(JSON.stringify(o));
+}

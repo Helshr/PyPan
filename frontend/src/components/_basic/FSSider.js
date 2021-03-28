@@ -49,7 +49,7 @@ class FSSider extends Component {
                         payload: { pathList },
                     })
                 }}>
-                    <Menu.Item key="/files" onClick={(e) => (this.siderRedirect(e))}><Icon type="diff" /><span>上传文件</span></Menu.Item>
+                    <Menu.Item key="/uploadFiles" onClick={(e) => (this.siderRedirect(e))}><Icon type="diff" /><span>上传文件</span></Menu.Item>
                 </Menu>
             </Sider>
         )
