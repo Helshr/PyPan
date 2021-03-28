@@ -1,0 +1,17 @@
+.logo {
+    background: rgba(255, 255, 255, 0.2);
+    margin: 20px;
+    height: 120px;
+    background: url(../assets/miao.png) no-repeat center 0;
+    /* background: url(../assets/ne1.jpg) no-repeat center 0; */
+    background-size: 120px 120px;
+    cursor: pointer;
+}
+
+.fssider {
+    background-color: #eeeeee;
+}
+
+.redirect > a:visited {
+    color: while;
+}

@@ -1,0 +1,60 @@
+.normal {
+    width: 1600px;
+    margin-top: 30px;
+}
+
+.success {
+    color: #3c763d;
+    background-color: #dff0d8;
+}
+
+.success:hover>td {
+    color: #3c763d;
+    background-color: rgba(0, 255, 0, 0.1) !important;
+}
+
+.warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+}
+
+.warning:hover>td {
+    color: #8a6d3b;
+    background-color: rgba(255, 255, 0, 0.1) !important;
+}
+
+.error:hover>td {
+    color: #a94442;
+    background-color: rgba(255, 0, 0, 0.1) !important;
+    /* background-color: yellow; */
+}
+
+.error {
+    color: #a94442;
+    background-color: #f2dede !important;
+    /* background-color: yellow; */
+}
+
+.failed:hover>td {
+    color: #a94442;
+    background-color: rgba(255, 0, 0, 0.1) !important;
+    /* background-color: yellow; */
+}
+
+.failed {
+    color: #a94442;
+    background-color: #f2dede !important;
+    /* background-color: yellow; */
+}
+
+.running:hover>td {
+    color: #0e568a;
+    background-color: rgba(0, 0, 255, 0.1) !important;
+    /* background-color: yellow; */
+}
+
+.running {
+    color: #0e568a;
+    background-color: #cadbf9 !important;
+    /* background-color: yellow; */
+}
