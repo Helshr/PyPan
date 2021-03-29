@@ -139,3 +139,5 @@ export const hash = (str) => {
 export const deepCopy = (o) => {
   return JSON.parse(JSON.stringify(o));
 }
+
+export const print = console.log.bind(console);

@@ -74,10 +74,13 @@ class FileMeta(db.Model):
         db.session.commit()
 
     @staticmethod
-    def delete_file_meta(file_name):
-        fm = FileMeta.query.filter_by(file_name=file_name).first()
+    def delete_file_meta(file_md5):
+        fm = FileMeta.query.filter_by(file_md5=file_md5).first()
+        jfm = fm.to_json()
+        file_name = jfm['name']
         db.session.delete(fm)
         db.session.commit()
+        return file_name
 
     @staticmethod
     def get_all_infos():
@@ -87,6 +90,9 @@ class FileMeta(db.Model):
             file_meta_out.append(file_meta.to_json())
         return file_meta_out
 
+    def get_file_name(self):
+        return self.name
+    
     def to_json(self):
         return {
             "name": self.file_name,
