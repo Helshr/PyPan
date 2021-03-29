@@ -35,22 +35,21 @@ function parseJSON(response) {
 function checkStatus(response) {
     if (response.status === 200) {
          return response;
-    } else if (response.status === 203) {
-        let url = response.data.url
-        window.location.href = url
-    } else {
+    } 
+    else {
         const error = new Error(response.statusText);
         error.response = response;
         throw error;
     }
 }
 
-const axiosRequest = (method, url, data) => {
+const axiosRequest = (method, url, data, headers={}) => {
     // axios.default.timeout = 6000
     return axios({
         method,
         url,
         data,
+        headers,
         withCredentials: true,
     })
     .then(checkStatus)
