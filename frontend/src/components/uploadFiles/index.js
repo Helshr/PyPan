@@ -1,12 +1,22 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Upload, Button, Icon } from 'antd';
-
-import { deepCopy } from '../../utils/utils';
+import { print } from '../../utils/utils';
 
 class UploadFile extends React.Component {
   state = {
   };
+
+  deleteFile = (file) => {
+    const fileMd5 = file['uid'];
+    const { dispatch } = this.props;
+    dispatch({
+      type: "uploadFiles/deleteFile",
+      payload: {
+        fileMd5,
+      }
+    })
+  }
 
   render() {
     const { fileInfoList } = this.props;
@@ -16,7 +26,8 @@ class UploadFile extends React.Component {
            action='/api/uploadFile'
            listType='picture'
            fileList={fileInfoList}
-           onRemove={file => console.log("will remove file: ", file)}
+           onDownload={file => print(`file: ${file}`)}
+           onRemove={file => this.deleteFile(file)}
         >
             <Button>
                 <Icon type="upload" /> Upload

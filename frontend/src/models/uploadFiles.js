@@ -1,4 +1,6 @@
+import { message } from 'antd';
 import * as filesService from '../services/uploadFiles';
+import { print } from '../utils/utils';
 
 export default {
     namespace: 'uploadFiles',
@@ -8,9 +10,6 @@ export default {
     },
 
     reducers: {
-        saveFromData(state, {payload: { fromData }}) {
-            return {...state, fromData};
-        },
         saveFileInfoList(state, {payload: { fileInfoList }}) {
             return {...state, fileInfoList};
         },
@@ -22,7 +21,17 @@ export default {
         },
         *uploadFile({payload: { formData }}, {call, put}) {
             const { data } = yield call(filesService.uploadFile, { formData });
-            yield put({type: "saveFromData", payload: { formData }});
+            print("uploadFile result: ", JSON.stringify(data));
+            // yield put({type: "saveFromData", payload: { formData }});
+        },
+        *deleteFile({payload: { fileMd5 }}, {call, put, select}) {
+            const { data } = yield call(filesService.deleteFile, { fileMd5 });
+            const fileName = data['file_name'];
+            message.success(`delete ${fileName} success.`);
+            const r = yield select(state => state.uploadFiles.fileInfoList);
+            print(`fileMd5: `, fileMd5);
+            print(`r: ${r}`);
+            yield put({type: "saveFileInfoList", payload: { fileInfoList: r.filter(i => i['uid'] !== fileMd5)}});
         }
     },
     subscriptions: {

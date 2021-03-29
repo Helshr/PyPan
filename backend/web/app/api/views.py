@@ -52,7 +52,7 @@ def upload():
 
             # return json for js call back
             result = UploadFile(name=filename, type=mime_type, size=size)
-        return simplejson.dumps({"files": [result.get_file()]})
+        return simplejson.dumps({"data": [result.get_file()]})
 
 
 @api.route('/api/getFileList', methods=['GET'])
@@ -64,6 +64,18 @@ def getFileList():
         meta_data['uid'] = meta_data['md5']
         del meta_data['md5']
     return simplejson.dumps({"files": meta_data_list})
+
+
+@api.route('/api/deleteFile/<file_uid>', methods=['DELETE'])
+def deleteFile(file_uid):
+    # delete from mysql
+    file_name = FileMeta.delete_file_meta(file_uid)
+    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file_name)
+    thumbnail_file_path = os.path.join(current_app.config['THUMBNAIL_FOLDER'], file_name)
+    # delete from os
+    os.remove(file_path)
+    os.remove(thumbnail_file_path)
+    return simplejson.dumps({"status": 200, "file_name": file_name})
 
 
 @api.route('/api/getFile/<filename>', methods=['GET'])
