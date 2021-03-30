@@ -18,6 +18,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'gif', 'png', 'jpg', 'jpeg', 'bmp', 'rar', 'zip
 @api.route('/api/uploadFile', methods=['POST'])
 def upload():
     files = request.files['file']
+    print(f"DEBUG {files}")
     # files = request.files['file']
     if files:
         filename = secure_filename(files.filename)
