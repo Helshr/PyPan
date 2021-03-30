@@ -9,7 +9,7 @@ from flask import request, current_app, Response
 from . import api
 from .upload_file import UploadFile
 from .. import db
-from ..models import FileMeta, FileTool
+from ..models import FileMeta
 
 IGNORED_FILES = set(['.gitignore'])
 ALLOWED_EXTENSIONS = set(['txt', 'gif', 'png', 'jpg', 'jpeg', 'bmp', 'rar', 'zip', '7z    ip', 'doc', 'docx'])
@@ -25,7 +25,7 @@ def upload():
         filename = gen_file_name(filename)
         mime_type = files.content_type
         if not allowed_file(files.filename):
-            result = uploadfile(name=filename, type=mime_type, size=0, not_allowed_msg="File type not allowed")
+            pass
         else:
             # save file to disk
             uploaded_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
@@ -35,12 +35,12 @@ def upload():
             if mime_type.startswith('image'):
                 create_thumbnail(filename)
                 
-            file_md5 = FileTool().get_file_md5(uploaded_file_path)
+            file_md5 = UploadFile.get_file_md5(uploaded_file_path)
             # judge file exist.
             if FileMeta.judge_file_meta(file_md5) == True:
                 return simplejson.dumps({"status": "file exist."})
-            file_size = FileTool().get_file_size(uploaded_file_path)
-            file_upload_at = FileTool().get_file_upload_at(uploaded_file_path)
+            file_size = UploadFile.get_file_size(uploaded_file_path)
+            file_upload_at = UploadFile.get_file_upload_at(uploaded_file_path)
             file_meta = FileMeta(location=current_app.config['UPLOAD_FOLDER'], file_name=filename, file_md5=file_md5, file_size=file_size, file_upload_at=file_upload_at)
             file_meta.insert_file_meta()
             if FileMeta.judge_file_meta(file_meta.file_md5) == True:
@@ -52,7 +52,7 @@ def upload():
             size = os.path.getsize(uploaded_file_path)
 
             # return json for js call back
-            result = UploadFile(name=filename, type=mime_type, size=size)
+            result = UploadFile(name=filename, type=mime_type, size=size, md5=file_md5)
         return simplejson.dumps({"data": [result.get_file()]})
 
 

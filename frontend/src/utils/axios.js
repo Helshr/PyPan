@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { notification } from 'antd'
+import { print } from './utils'
 
 axios.default.retry = 4
 axios.default.retryDelay = 1000
@@ -43,12 +44,13 @@ function checkStatus(response) {
     }
 }
 
-const axiosRequest = (method, url, data) => {
+const axiosRequest = (method, url, data, config={}) => {
     // axios.default.timeout = 6000
     return axios({
         method,
         url,
         data,
+        ...config,
         withCredentials: true,
     })
     .then(checkStatus)

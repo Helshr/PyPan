@@ -1,48 +1,11 @@
 import os
 import sys
 import time
-import hashlib
 from datetime import datetime
 
 from sqlalchemy import Column, DateTime, Integer
 
 from . import db
-
-
-class FileTool:
-
-    @staticmethod
-    def get_file_md5(file_location):
-        with open(file_location, 'rb') as f:
-            data = f.read()
-        file_md5 = hashlib.md5(data).hexdigest()
-        return file_md5
-
-
-    @staticmethod
-    def get_file_size(file_location):
-        # unit B
-        file_size = os.path.getsize(file_location)
-        return file_size
-
-    
-    @staticmethod
-    def get_file_upload_at(file_location):
-        t = datetime.utcnow()
-        return t
-    
-
-    def _format_timestamp(self, timestamp):
-        time_struct = time.localtime(timestamp)
-        return time.strftime("%Y-%m-%d %H:%M:%S", time_struct)
-
-    # def get_file_upload_at(self):
-    #     location = self.location
-    #     file_name = self.file_name
-    #     file_location = os.path.join(location, file_name)
-    #     t = os.path.getmtime(file_location)
-    #     ft = self._format_timestamp(t)
-    #     return ft
 
 
 class FileMeta(db.Model):
