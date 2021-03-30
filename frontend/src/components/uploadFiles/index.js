@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import { connect } from 'dva';
 import { Upload, Icon, Modal } from 'antd';
@@ -17,37 +18,8 @@ class UploadFile extends React.Component {
   state = {
     previewVisible: false,
     previewImage: '',
-    fileList: [
-      {
-        uid: '-1',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-2',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-3',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-4',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-5',
-        name: 'image.png',
-        status: 'error',
-      },
-    ],
+    progress: 0,
+    
   };
 
   handleCancel = () => this.setState({ previewVisible: false });
@@ -74,20 +46,40 @@ class UploadFile extends React.Component {
     })
   }
 
-  handleChange = ({ fileList }) => {
-    // this.setState({ fileList });
-    const { dispatch } = this.props;
-    dispatch({
-      type: "uploadFiles/saveFileInfoList",
-      payload: {
-        fileInfoList: fileList,
+  uploadImage = async options => {
+    const { onSuccess, onError, file, onProgress } = options;
+
+    const fmData = new FormData();
+    const config = {
+      headers: { "content-type": "multipart/form-data", "accept": "*/*", "X-Requested-With": "XMLHttpRequest" },
+      onUploadProgress: event => {
+        const percent = Math.floor((event.loaded / event.total) * 100);
+        this.setState({ progress: percent })
+        if (percent === 100) {
+          setTimeout(() => this.setState({ progress: 0 }), 1000);
+        }
+        onProgress({ percent: (event.loaded / event.total) * 100 });
       }
-    })
-  }
+    };
+    fmData.append("file", file);
+    try {
+      const res = await axios.post(
+        "api/uploadFile",
+        fmData,
+        config
+      );
+      onSuccess("Ok");
+      console.log("server res: ", res);
+    } catch (err) {
+      console.log("Eroor: ", err);
+      const error = new Error("Some error");
+      onError({ err });
+    }
+  };
+
   
   render() {
-  const { fileInfoList } = this.props;
-
+    const { fileInfoList } = this.props;
     const { previewVisible, previewImage, fileList } = this.state;
     const uploadButton = (
       <div>
@@ -98,14 +90,14 @@ class UploadFile extends React.Component {
     return (
       <div className="clearfix">
         <Upload
-          action='/api/uploadFile'
+          // action='/api/uploadFile'
           listType="picture-card"
           fileList={fileInfoList}
           onPreview={this.handlePreview}
-          onChange={this.handleChange}
           onRemove={file => this.deleteFile(file)}
+          customRequest={this.uploadImage}
         >
-          {fileList.length >= 8 ? null : uploadButton}
+          {fileInfoList.length >= 8 ? null : uploadButton}
         </Upload>
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
           <img alt="example" style={{ width: '100%' }} src={previewImage} />

@@ -43,13 +43,12 @@ function checkStatus(response) {
     }
 }
 
-const axiosRequest = (method, url, data, headers={}) => {
+const axiosRequest = (method, url, data) => {
     // axios.default.timeout = 6000
     return axios({
         method,
         url,
         data,
-        headers,
         withCredentials: true,
     })
     .then(checkStatus)
