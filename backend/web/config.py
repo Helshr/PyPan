@@ -21,6 +21,8 @@ class TestingConfig(Config):
 
 class DevelopmentConfig(Config):
     FLASK_ENV = "development"
+    URL_PRE_HOST = "http://192.168.3.16:8000/api/getFile/"
+    THUMB_URL_PRE_HOST = "http://192.168.3.16:8000/api/getThumbnailFile/"
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@192.168.3.16:3306/pypan"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     UPLOAD_FOLDER = '/home/helonghuan/git_projects/PyPan/backend/data'

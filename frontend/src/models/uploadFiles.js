@@ -6,7 +6,6 @@ export default {
     namespace: 'uploadFiles',
     state: {
         fileInfoList: [],
-        formData: null,
     },
 
     reducers: {
@@ -19,9 +18,23 @@ export default {
             const { data } = yield call(filesService.getAllFilesInfo, { });
             yield put({type: "saveFileInfoList", payload: { fileInfoList: data['files'] }});
         },
-        *uploadFile({payload: { formData }}, {call, put}) {
-            const { data } = yield call(filesService.uploadFile, { formData });
-            print("uploadFile result: ", JSON.stringify(data));
+        *uploadFile({payload: { formData, config }}, {call, put, select}) {
+            const { data } = yield call(filesService.uploadFile, { formData, config });
+            print("uploadFile result: ", data);
+            // single data result
+            // TODO: multi data result
+            const rawData = data['data'][0];
+            const { name, url, thumbnailUrl, md5 } = rawData;
+            print(name, url, thumbnailUrl, md5)
+            const fileInfoDict = {
+                name,
+                url,
+                thumbUrl: thumbnailUrl,
+                uid: md5,
+            }
+            const r = yield select(state => state.uploadFiles.fileInfoList);
+            r.push(fileInfoDict)
+            yield put({type: "saveFileInfoList", payload: { fileInfoList: r}});
             // yield put({type: "saveFromData", payload: { formData }});
         },
         *deleteFile({payload: { fileMd5 }}, {call, put, select}) {
