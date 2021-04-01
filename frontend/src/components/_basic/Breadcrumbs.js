@@ -7,6 +7,8 @@ import {connect} from "dva"
 const routes = [
     { path: '/test', breadcrumb: "测试" },
     { path: '/uploadFiles', breadcrumb: "文件上传" },
+    { path: '/login', breadcrumb: "登陆" },
+    { path: '/register', breadcrumb: "注册" },
 ]
 
 const excludePaths = ['/', '/zh_CN']

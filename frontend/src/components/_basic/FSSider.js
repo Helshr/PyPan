@@ -1,8 +1,8 @@
-import { Layout, Menu, Icon } from 'antd'
-import { Component } from 'react'
-import router from 'umi/router'
-import { connect } from 'dva'
-import styles from '../../styles/FSSider.css'
+import { Layout, Menu, Icon } from 'antd';
+import { Component } from 'react';
+import router from 'umi/router';
+import { connect } from 'dva';
+import styles from '../../styles/FSSider.css';
 
 const { Sider } = Layout
 
@@ -19,7 +19,7 @@ class FSSider extends Component {
     }
 
     siderRedirect = (o) => {
-        router.replace(`${o.key}`)
+        router.replace(`${o.key}`);
     }
 
     render() {

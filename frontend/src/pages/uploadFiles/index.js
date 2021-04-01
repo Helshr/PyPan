@@ -1,1 +1,1 @@
-export default from '../../components/uploadFiles/index'
+export default from '../../components/uploadFiles/index';

@@ -2,10 +2,37 @@ import os
 import sys
 import time
 from datetime import datetime
-
+from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Column, DateTime, Integer
+from flask_login import UserMixin, AnonymousUserMixin
+from . import db, login_manager
 
-from . import db
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(64), unique=True, index=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+    password_hash = db.Column(db.String(128))
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def get_username(self):
+        return self.username
 
 
 class FileMeta(db.Model):
@@ -18,7 +45,6 @@ class FileMeta(db.Model):
     file_size = db.Column(db.String(120))
     file_upload_at = db.Column(db.DateTime, default=datetime.utcnow)
     file_update_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
 
     @staticmethod
     def judge_file_meta(file_md5):
@@ -27,7 +53,6 @@ class FileMeta(db.Model):
             return True
         else:
             return False
-
 
     def __repr__(self):
         return f"<FileMeta {os.path.join(self.location, self.file_name)}>"
