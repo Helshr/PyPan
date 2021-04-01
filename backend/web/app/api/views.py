@@ -10,6 +10,8 @@ from . import api
 from .upload_file import UploadFile
 from .. import db
 from ..models import FileMeta
+from ..res import Res
+
 
 IGNORED_FILES = set(['.gitignore'])
 ALLOWED_EXTENSIONS = set(['txt', 'gif', 'png', 'jpg', 'jpeg', 'bmp', 'rar', 'zip', '7z    ip', 'doc', 'docx'])
@@ -18,7 +20,6 @@ ALLOWED_EXTENSIONS = set(['txt', 'gif', 'png', 'jpg', 'jpeg', 'bmp', 'rar', 'zip
 @api.route('/api/uploadFile', methods=['POST'])
 def upload():
     files = request.files['file']
-    print(f"DEBUG {files}")
     # files = request.files['file']
     if files:
         filename = secure_filename(files.filename)
@@ -53,7 +54,7 @@ def upload():
 
             # return json for js call back
             result = UploadFile(name=filename, type=mime_type, size=size, md5=file_md5)
-        return simplejson.dumps({"data": [result.get_file()]})
+        return Res.res_200({"fileList": [result.get_file()]});
 
 
 @api.route('/api/getFileList', methods=['GET'])
@@ -64,7 +65,7 @@ def getFileList():
         meta_data['thumbUrl'] = f"http://192.168.3.16:8000/api/getThumbnailFile/{meta_data['name']}"
         meta_data['uid'] = meta_data['md5']
         del meta_data['md5']
-    return simplejson.dumps({"files": meta_data_list})
+    return Res.res_200({"files": meta_data_list})
 
 
 @api.route('/api/deleteFile/<file_uid>', methods=['DELETE'])
@@ -76,7 +77,7 @@ def deleteFile(file_uid):
     # delete from os
     os.remove(file_path)
     os.remove(thumbnail_file_path)
-    return simplejson.dumps({"status": 200, "file_name": file_name})
+    return Res.res_200({"file_name": file_name})
 
 
 @api.route('/api/getFile/<filename>', methods=['GET'])

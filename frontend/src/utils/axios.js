@@ -55,7 +55,7 @@ const axiosRequest = (method, url, data, config={}) => {
     })
     .then(checkStatus)
     .then(parseJSON)
-    .then(data => ({ data}))
+    .then(data => ({ rawData: data}))
     .catch(err => {
         notification.error({
             message: `${err}.`

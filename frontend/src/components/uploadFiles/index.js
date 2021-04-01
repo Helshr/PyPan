@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React from 'react';
 import { connect } from 'dva';
 import { Upload, Icon, Modal } from 'antd';
@@ -46,74 +45,30 @@ class UploadFile extends React.Component {
     })
   }
 
-  // uploadImage = async options => {
-  //   const { onSuccess, onError, file, onProgress } = options;
-
-  //   const fmData = new FormData();
-  //   const config = {
-  //     headers: { "content-type": "multipart/form-data", "accept": "*/*", "X-Requested-With": "XMLHttpRequest" },
-  //     onUploadProgress: event => {
-  //       const percent = Math.floor((event.loaded / event.total) * 100);
-  //       this.setState({ progress: percent })
-  //       if (percent === 100) {
-  //         setTimeout(() => this.setState({ progress: 0 }), 1000);
-  //       }
-  //       onProgress({ percent: (event.loaded / event.total) * 100 });
-  //     }
-  //   };
-  //   fmData.append("file", file);
-  //   try {
-  //     const res = await axios.post(
-  //       "api/uploadFile",
-  //       fmData,
-  //       config
-  //     );
-  //     onSuccess("Ok");
-  //     console.log("server res: ", res);
-  //   } catch (err) {
-  //     console.log("Eroor: ", err);
-  //     const error = new Error("Some error");
-  //     onError({ err });
-  //   }
-  // };
-
-    uploadImage = options => {
-      const { file, onProgress } = options;
-      print("file info: ", file);
-      const fmData = new FormData();
-      const config = {
-        headers: { "content-type": "multipart/form-data", "accept": "*/*", "X-Requested-With": "XMLHttpRequest" },
-        onUploadProgress: event => {
-          const percent = Math.floor((event.loaded / event.total) * 100);
-          this.setState({ progress: percent })
-          if (percent === 100) {
-            setTimeout(() => this.setState({ progress: 0 }), 1000);
-          }
-          onProgress({ percent: (event.loaded / event.total) * 100 });
+  uploadImage = options => {
+    const { file, onProgress } = options;
+    print("file info: ", file);
+    const fmData = new FormData();
+    const config = {
+      headers: { "content-type": "multipart/form-data", "accept": "*/*", "X-Requested-With": "XMLHttpRequest" },
+      onUploadProgress: event => {
+        const percent = Math.floor((event.loaded / event.total) * 100);
+        this.setState({ progress: percent })
+        if (percent === 100) {
+          setTimeout(() => this.setState({ progress: 0 }), 1000);
         }
-      };
-      fmData.append("file", file);
-      const { dispatch } = this.props;
-      dispatch({
-        type: "uploadFiles/uploadFile",
-        payload: {
-          formData: fmData,
-          config,
-        }
-      })
-      // try {
-      //   const res = await axios.post(
-      //     "api/uploadFile",
-      //     fmData,
-      //     config
-      //   );
-      //   onSuccess("Ok");
-      //   console.log("server res: ", res);
-      // } catch (err) {
-      //   console.log("Eroor: ", err);
-      //   const error = new Error("Some error");
-      //   onError({ err });
-      // }
+        onProgress({ percent: (event.loaded / event.total) * 100 });
+      }
+    };
+    fmData.append("file", file);
+    const { dispatch } = this.props;
+    dispatch({
+      type: "uploadFiles/uploadFile",
+      payload: {
+        formData: fmData,
+        config,
+      }
+    })
   };
 
 
