@@ -7,15 +7,21 @@ import { print } from '../../utils/utils';
 
 class CustomAvatar extends React.Component {
 
+    componentDidMount() {
+        const { dispatch } = this.props;
+        dispatch({
+            type: 'auth/authorization',
+            payload: {},
+        })
+    }
+
     getRandomColor = () => {
         let r = "#";
         for (let i = 0; i < 3; i++) {
             const n = parseInt(Math.random() * 255, 10);
             const rn = n.toString(16);
-            print("DEBUG: ", rn);
             r += rn;
         }
-        print("random color is ", r);
         return r;
     }
   
@@ -23,12 +29,18 @@ class CustomAvatar extends React.Component {
         const { username } = this.props;
         const fontColor = this.getRandomColor();
         const bkColor = this.getRandomColor();
-
-        return (
-            <div className={styles.avator}>
-                <Avatar style={{ color: fontColor, backgroundColor: bkColor }}>{username.slice(0, 1).toUpperCase()}</Avatar>
-            </div>
-        );
+        if (username === "") {
+            return (
+                <>
+                </>
+            );
+        } else {
+            return (
+                <div className={styles.avator}>
+                    <Avatar style={{ color: fontColor, backgroundColor: bkColor }}>{username.slice(0, 1).toUpperCase()}</Avatar>
+                </div>
+            );
+        }
     }
 }
 

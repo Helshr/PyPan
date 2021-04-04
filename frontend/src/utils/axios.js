@@ -5,64 +5,62 @@ import { print } from './utils'
 axios.default.retry = 4
 axios.default.retryDelay = 1000
 
-axios.interceptors.response.use(undefined, function axiosRetryInterceptor(err) {
-    let config = err.config
-    if (!config || !config.retry) return Promise.reject(err)
-
-    config.__retryCount = config.__retryCount || 0
-
-    if (config.__retryCount >= config.retry) {
-        return Promise.reject(err)
-    }
-
-    config.__retryCount += 1
-
-    let backoff = new Promise(resolve => {
-        setTimeout(() => {
-            resolve()
-        }, config.retryDelay || 1)
-    })
-
-    return backoff.then(() => {
-        return axios
-    })
+axios.interceptors.request.use(    
+    config => {        
+        const t = window.sessionStorage.getItem('token');
+        let token = "";
+        if (t !== null) {
+            token = `Bearer ${window.sessionStorage.getItem('token')}`;        
+        }
+        token && (config.headers.Authorization = token);        
+        return config;    
+    },    
+    error => {        
+        return Promise.error(error);    
 })
 
-function parseJSON(response) {
-    let data = response.data
-    return data
-}
-
-function checkStatus(response) {
-    if (response.status === 200) {
-         return response;
-    } 
-    else {
-        const error = new Error(response.statusText);
-        error.response = response;
-        throw error;
+axios.interceptors.response.use(
+    response => {
+        print("DEBUG response: ", response);
+        if (response.status === 200) {            
+            return Promise.resolve(response);        
+        }
+        else if (response.status === 401) {            
+            window.location = "/login";
+        }
+        else {            
+            return Promise.reject(response);        
+        } 
+    },
+    error => {
+        console.log("error", error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 401:
+                window.location.replace("/login");
+            case 500:
+                print("server error.");
+            }
+        }
     }
-}
-
+)
 const axiosRequest = (method, url, data, config={}) => {
+    print("method: ", method);
+    print("url: ", url);
     // axios.default.timeout = 6000
-    return axios({
-        method,
-        url,
-        data,
-        ...config,
-        withCredentials: true,
+    return new Promise((resolve, reject) => {
+        axios({
+            method,
+            url,
+            data,
+            ...config,
+            withCredentials: true,
+        }).then(res => {
+            resolve(res.data);
+        }).catch(err =>{
+            reject(err.data)        
+        }) 
     })
-    .then(checkStatus)
-    .then(parseJSON)
-    .then(data => ({ rawData: data}))
-    .catch(err => {
-        notification.error({
-            message: `${err}.`
-        })
-        return {data: []} 
-    });
-    
 }
 
 export default axiosRequest

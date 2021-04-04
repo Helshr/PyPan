@@ -15,6 +15,7 @@ export default {
     },
     effects: {
         *getAllFilesInfo({payload: {}}, {call, put}) {
+            print("debug: getAllFilesInfo: ");
             const { rawData } = yield call(filesService.getAllFilesInfo, { });
             const { data } = rawData;
             const { files } = data;

@@ -1,6 +1,12 @@
-from flask import render_template, redirect, request, url_for, flash
-from flask_login import login_user, logout_user, login_required, \
-    current_user
+from flask import jsonify
+from flask import request
+
+from flask_login import logout_user
+from flask_login import login_required
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+
 from . import auth
 from .. import db
 from ..models import User
@@ -26,9 +32,17 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user is not None and user.verify_password(password):
         username = user.get_username()
-        return Res.res_200({"username": username})
+        access_token = create_access_token(identity=username)
+        return jsonify({"access_token": access_token, "status": 200})
     else:
-        return Res.res_503({"login failed."})
+        return jsonify({"msg": "Bad username or password", "status": 401}), 401
+
+
+@auth.route('/api/authorization', methods=['GET'])
+@jwt_required()
+def authorization():
+    current_user = get_jwt_identity()
+    return jsonify({"user_name": current_user})
 
 
 @auth.route('/api/logout', methods=['GET'])
@@ -53,6 +67,5 @@ def register():
     else:
         Res.res_503(f"validate email failed.")
     user = User(email=email, username=username, password=password)
-    db.session.add(user)
-    db.session.commit()
+    User.insert(user)
     return Res.res_200({"username": username})

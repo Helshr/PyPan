@@ -4,7 +4,8 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 
 
 from config import config
@@ -12,7 +13,7 @@ from config import config
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
-login_manager = LoginManager()
+jwt_extend = JWTManager()
 
 
 def create_app(config_name):
@@ -22,7 +23,7 @@ def create_app(config_name):
 
     bootstrap.init_app(app)
     db.init_app(app)
-    login_manager.init_app(app)
+    jwt_extend.init_app(app)
 
     from .api import api as api_blueprint
     app.register_blueprint(api_blueprint)
