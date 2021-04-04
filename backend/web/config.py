@@ -27,7 +27,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     UPLOAD_FOLDER = '/home/helonghuan/git_projects/PyPan/backend/data'
     THUMBNAIL_FOLDER = '/home/helonghuan/git_projects/PyPan/backend/data/thumbnail'
-    SECRET_KEY = 'hard to guess string.'
+    JWT_SECRET_KEY = 'hard to guess string.'
     
 
 config = {

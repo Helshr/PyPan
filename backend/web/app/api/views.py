@@ -5,6 +5,7 @@ import simplejson
 import traceback
 from werkzeug.utils import secure_filename
 from flask import request, current_app, Response
+from flask_jwt_extended import jwt_required
 
 from . import api
 from .upload_file import UploadFile
@@ -35,15 +36,14 @@ def upload():
             # create thumbnail after saving
             if mime_type.startswith('image'):
                 create_thumbnail(filename)
-                
+            # create file_meta
             file_md5 = UploadFile.get_file_md5(uploaded_file_path)
-            # judge file exist.
-            if FileMeta.judge_file_meta(file_md5) == True:
-                return simplejson.dumps({"status": "file exist."})
             file_size = UploadFile.get_file_size(uploaded_file_path)
             file_upload_at = UploadFile.get_file_upload_at(uploaded_file_path)
             file_meta = FileMeta(location=current_app.config['UPLOAD_FOLDER'], file_name=filename, file_md5=file_md5, file_size=file_size, file_upload_at=file_upload_at)
-            file_meta.insert_file_meta()
+            # insert file_meta in file_metas;
+            FileMeta.insert(file_meta)
+
             if FileMeta.judge_file_meta(file_meta.file_md5) == True:
                 print("{} save meta success.".format(file_meta.file_name))
             else:
@@ -54,10 +54,11 @@ def upload():
 
             # return json for js call back
             result = UploadFile(name=filename, type=mime_type, size=size, md5=file_md5)
-        return Res.res_200({"fileList": [result.get_file()]});
+            return Res.res_200({"fileList": [result.get_file()]});
 
 
 @api.route('/api/getFileList', methods=['GET'])
+@jwt_required()
 def getFileList():
     meta_data_list = FileMeta.get_all_infos()
     for meta_data in meta_data_list:

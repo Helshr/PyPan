@@ -1,10 +1,12 @@
 alembic==1.5.8
 backcall==0.2.0
 cffi==1.14.5
+click==7.1.2
 cryptography==3.4.6
 decorator==4.4.2
-Flask==0.10
+Flask==1.1.2
 Flask-Bootstrap==3.2.0.2
+Flask-JWT-Extended==4.1.0
 Flask-Login==0.5.0
 Flask-Migrate==2.7.0
 Flask-Script==2.0.6
@@ -25,6 +27,7 @@ prompt-toolkit==3.0.17
 ptyprocess==0.7.0
 pycparser==2.20
 Pygments==2.8.1
+PyJWT==2.0.1
 PyMySQL==1.0.2
 python-dateutil==2.8.1
 python-editor==1.0.4
