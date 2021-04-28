@@ -11,26 +11,68 @@ from . import db
 class UserFile(db.Model):
     __tablename__ = 'user_files'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column("User", db.ForeignKey('users.username'), index=True)
-    file_md5 = db.Column("FileMeta", db.ForeignKey('file_metas.file_md5'), index=True)
-    file_upload_at = db.Column(db.DateTime, default=datetime.utcnow)
+    username = db.Column(db.String(64), db.ForeignKey('users.username'))
+    file_md5 = db.Column(db.String(40), db.ForeignKey('file_metas.file_md5'))
+    file = db.relationship("FileMeta", backref='user_files')
+    file_name = db.Column(db.String(40))
     file_size = db.Column(db.String(120))
-    file_name = db.Column(db.String(64))
+    file_upload_at = db.Column(db.DateTime, default=datetime.utcnow)
+    file_update_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.Integer, default=0)
 
-    @property
-    def password(self):
-        raise AttributeError('password is not a readable attribute')
+    def __repr__(self):
+        return f"<UserFile {self.username} {self.file}>"
 
-    @password.setter
-    def password(self, password):
-        self.password_hash = generate_password_hash(password)
+    @staticmethod
+    def check_exist(username, file_md5):
+        user_file = UserFile.query.filter_by(username=username, file_md5=file_md5).first()
+        if user_file == None:
+            return False
+        else:
+            return True
     
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    @staticmethod
+    def get_user_file_list(username):
+        user_file_list = UserFile.query.filter_by(username=username).all()
+        if user_file_list == None:
+            return []
+        else:
+            r = []
+            for i in range(len(user_file_list)):
+                file_info = user_file_list[i]
+                json_data = file_info.to_json()
+                r.append({
+                    "key": i,
+                    "file_name": json_data['name'],
+                    "file_upload_at": json_data['uploadAt'],
+                    "file_size": json_data['fileSize'],
+                    "file_md5": json_data['md5'],
+                })
+            print("$$$$ DEBUG: ", r)
+            return r
 
-    def insert(self):
-        return self.username
+    @staticmethod
+    def insert(user_file):
+        db.session.add(user_file)
+        db.session.commit()
 
+    @staticmethod
+    def delete(username, file_md5):
+        uf = UserFile.query.filter_by(username=username, file_md5=file_md5).first()
+        print(f"will delete file is : {uf}")
+        db.session.delete(uf)
+        db.session.commit()
+        json_data = uf.to_json()
+        return json_data['name']
+
+    def to_json(self):
+        return {
+            "name": self.file_name,
+            "md5": self.file_md5,
+            "location": self.file_name,
+            "uploadAt": self.file_update_at,
+            "fileSize": self.file_size,
+        }
 
 
 class User(db.Model):
@@ -39,6 +81,10 @@ class User(db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
+    user_files = db.relationship('UserFile', backref='user_file', lazy='dynamic')
+
+    def __repr__(self):
+        return f"<User {self.username}>"
 
     @property
     def password(self):
@@ -59,15 +105,43 @@ class User(db.Model):
         db.session.add(user)
         db.session.commit()
 
+    @staticmethod
+    def query_user(user_name):
+        user = User.query.filter_by(username=user_name).first()
+        return user
+    
+    def get_all_files(self):
+        r = []
+        count = self.user_files.count()
+        for uf in self.user_files.all():
+            r.append(uf.to_json())
+        return r
+
 
 class FileMeta(db.Model):
     __tablename__ = "file_metas"
     location = db.Column(db.String(120))
     file_name = db.Column(db.String(40))
-    file_md5 = db.Column(db.String(40), unique=True, primary_key=True)
+    file_md5 = db.Column(db.String(40), unique=True, primary_key=True, index=True)
     file_size = db.Column(db.String(120))
     file_upload_at = db.Column(db.DateTime, default=datetime.utcnow)
     file_update_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    @staticmethod
+    def check_exist(file_md5):
+        file_info = FileMeta.query.filter_by(file_md5=file_md5).first()
+        if file_info == []:
+            return False
+        else:
+            json_data = file_info.to_json()
+            print("@@@@ DEBUG: ", json_data)
+            return {
+                "file_name": json_data['file_name'],
+                "file_md5": json_data['file_md5'],
+                "file_size": json_data['file_size'],
+                "file_upload_at": json_data['file_upload_at'],
+                "file_update_at": json_data['file_update_at'],
+            }
 
     @staticmethod
     def judge_file_meta(file_md5):
@@ -89,7 +163,7 @@ class FileMeta(db.Model):
     def delete_file_meta(file_md5):
         fm = FileMeta.query.filter_by(file_md5=file_md5).first()
         jfm = fm.to_json()
-        file_name = jfm['name']
+        file_name = jfm['file_name']
         db.session.delete(fm)
         db.session.commit()
         return file_name
@@ -103,12 +177,16 @@ class FileMeta(db.Model):
         return file_meta_out
 
     def get_file_name(self):
-        return self.name
+        return self.file_name
     
     def to_json(self):
         return {
-            "name": self.file_name,
-            "md5": self.file_md5,
+            "file_name": self.file_name,
+            "file_md5": self.file_md5,
+            "file_size": self.file_size,
+            "file_upload_at": self.file_upload_at,
+            "file_update_at": self.file_update_at,
+            "location": os.path.join(self.location, self.file_name),
         }
 
 

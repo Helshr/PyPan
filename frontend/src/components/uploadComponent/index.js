@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Upload, Icon, Modal } from 'antd';
-
+import { Upload, Icon, Button } from 'antd';
+import UploadHistory from './UploadHistory';
 import { print } from '../../utils/utils';
 
 function getBase64(file) {
@@ -13,12 +13,9 @@ function getBase64(file) {
   });
 }
 
-class UploadFile extends React.Component {
+class UploadComponent extends React.Component {
   state = {
-    previewVisible: false,
-    previewImage: '',
     progress: 0,
-    
   };
 
   handleCancel = () => this.setState({ previewVisible: false });
@@ -34,21 +31,9 @@ class UploadFile extends React.Component {
     });
   };
 
-  deleteFile = (file) => {
-    const fileMd5 = file['uid'];
-    const { dispatch } = this.props;
-    dispatch({
-      type: "uploadFiles/deleteFile",
-      payload: {
-        fileMd5,
-      }
-    })
-  }
-
   uploadImage = options => {
     const { file, onProgress } = options;
-    print("file info: ", file);
-    const fmData = new FormData();
+    
     const config = {
       headers: { "content-type": "multipart/form-data", "accept": "*/*", "X-Requested-With": "XMLHttpRequest" },
       onUploadProgress: event => {
@@ -60,54 +45,53 @@ class UploadFile extends React.Component {
         onProgress({ percent: (event.loaded / event.total) * 100 });
       }
     };
-    fmData.append("file", file);
+
     const { dispatch } = this.props;
     dispatch({
-      type: "uploadFiles/uploadFile",
+      type: "upload/uploadFile",
       payload: {
-        formData: fmData,
+        file: file,
         config,
       }
     })
   };
 
+  handleDeleteFileInfo = (fileMd5) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "upload/deleteFile",
+      payload: {
+        fileMd5,
+      }
+    })
+  }
 
-  
   render() {
-    const { fileInfoList } = this.props;
-    print("debug: ", fileInfoList);
-    const { previewVisible, previewImage, fileList } = this.state;
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
+    const { userFileList } = this.props;
+
     return (
       <div className="clearfix">
         <Upload
-          // action='/api/uploadFile'
-          listType="picture-card"
-          fileList={fileInfoList}
-          onPreview={this.handlePreview}
+          // listType="picture-card"
+          // onPreview={this.handlePreview}
           onRemove={file => this.deleteFile(file)}
           customRequest={this.uploadImage}
         >
-          {fileInfoList.length >= 8 ? null : uploadButton}
+          <Button>
+            <Icon type="upload" /> Click to Upload
+          </Button>
         </Upload>
-        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-          <img alt="example" style={{ width: '100%' }} src={previewImage} />
-        </Modal>
+        <UploadHistory userFileList={userFileList} handleDeleteFileInfo={this.handleDeleteFileInfo.bind(this)}/>
       </div>
     );
   }
 }
 
 function mapStateToProps(state) {
-  const { fileInfoList } = state.uploadFiles;
+  const { userFileList } = state.upload;
   return {
-      fileInfoList,
+    userFileList,
   }
 }
 
-export default connect(mapStateToProps)(UploadFile);
+export default connect(mapStateToProps)(UploadComponent);

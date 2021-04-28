@@ -49,7 +49,12 @@ class FSSider extends Component {
                         payload: { pathList },
                     })
                 }}>
-                    <Menu.Item key="/uploadFiles" onClick={(e) => (this.siderRedirect(e))}><Icon type="diff" /><span>上传文件</span></Menu.Item>
+                    <Menu.Item key="/imgs" onClick={(e) => (this.siderRedirect(e))}><Icon type="camera" /><span>图片</span></Menu.Item>
+                    <Menu.Item key="/videos" onClick={(e) => (this.siderRedirect(e))}><Icon type="video-camera" /><span>视频</span></Menu.Item>
+                    <Menu.Item key="/audios" onClick={(e) => (this.siderRedirect(e))}><Icon type="customer-service" /><span>音频</span></Menu.Item>
+                    <Menu.Item key="/docs" onClick={(e) => (this.siderRedirect(e))}><Icon type="book" /><span>文档</span></Menu.Item>
+                    <Menu.Item key="/upload" onClick={(e) => (this.siderRedirect(e))}><Icon type="cloud-upload" /><span>上传文件</span></Menu.Item>
+                    <Menu.Item key="/download" onClick={(e) => (this.siderRedirect(e))}><Icon type="cloud-download" /><span>正在下载</span></Menu.Item>
                 </Menu>
             </Sider>
         )

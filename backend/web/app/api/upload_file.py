@@ -57,7 +57,6 @@ class UploadFile():
                         "type": self.type,
                         "size": self.size, 
                         "url": os.path.join(url_prefix, self.url), 
-                        "thumbnailUrl": os.path.join(thubm_url_prefix, self.name),
                         "md5": self.md5,
                     }
 
@@ -82,7 +81,6 @@ class UploadFile():
             return {"name": self.name,
                     "size": self.size, 
                     "url": self.url, 
-                    "thumbnailUrl": self.thumbnail_url,
                     "deleteUrl": self.delete_url, 
                     "deleteType": self.delete_type,}
         

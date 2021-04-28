@@ -44,6 +44,9 @@ axios.interceptors.response.use(
         }
     }
 )
+
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+
 const axiosRequest = (method, url, data, config={}) => {
     print("method: ", method);
     print("url: ", url);
